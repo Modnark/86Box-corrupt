@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <wchar.h>
-#include <time.h>
+#include <ctype.h>
 #include <86box/corrupt-server.h>
 #include <86box/corrupt-helpers.h>
 #include <86box/86box.h>
@@ -21,7 +21,13 @@
 #include <netinet/in.h>
 #endif
 
-#define PORT    "59891"
+#define PORT    59891
+
+enum server_packets {
+    srv_Invalid,
+    srv_GetMemSize,
+    srv_BlastMem
+};
 
 void run_corrupt_server() {
     write_to_log_file("==========================[ Corrupt server started ]==========================", 1);
@@ -94,6 +100,7 @@ void run_corrupt_server() {
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    serv_addr.sin_port = htons(PORT);
 
     bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 #endif
@@ -108,15 +115,35 @@ void run_corrupt_server() {
         connfd = accept(listenfd, (struct sockaddr*)NULL, NULL);
         write_to_log_file("Accepted inbound connection", 1);
 
+        snprintf(sendBuff, sizeof(sendBuff), "1");
+
         while((count = recv(connfd, readBuff, sizeof(readBuff), 0)) > 0) {
             write_to_log_file("Client sent data: ", 0);
             write_to_log_file(readBuff, 1);
 
+
             char *tokens[256];
             split_to_tokens(tokens, readBuff);
-            snprintf(sendBuff, sizeof(sendBuff), "OK");
 
+            int packet_id = atoi(tokens[0]);
 
+            switch(packet_id) {
+                case srv_Invalid:
+                    snprintf(sendBuff, sizeof(sendBuff), "0");
+                    break;
+                case srv_GetMemSize:
+                    snprintf(sendBuff, sizeof(sendBuff), "%d", get_memory_size());
+                    break;
+                case srv_BlastMem:
+                    do_corruption_blast(atoi(tokens[1]));
+                    break;
+            }
+
+            #ifdef _WIN32
+            send(connfd, sendBuff, strlen(sendBuff), 0);
+            #else
+            write(connfd, sendBuff, strlen(sendBuff));
+            #endif
 
             // Clear buffers
             memset(sendBuff, 0, sizeof sendBuff);
@@ -139,7 +166,7 @@ void run_corrupt_server() {
     }
 }
 
-#ifdef _win32
+#ifdef _WIN32
 DWORD WINAPI run_corrupt_server_win32(LPVOID lPtr) {
     run_corrupt_server();
 }

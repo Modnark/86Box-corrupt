@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <time.h>
 #include <86box/86box.h>
 #include <86box/mem.h>
 
@@ -38,7 +40,24 @@ void write_to_log_file(char* entry_text, int add_new_line) {
  * returns: nothing
 */
 void do_corruption_blast(int radius) {
-    int size_of_memory = get_memory_size();
+    srand(time(NULL));
+
+    write_to_log_file("==========================[ BLAST START ]==========================", 1);
+
+    for(int i = 0; i < radius; i++) {
+        int size_of_memory = get_memory_size();
+        int blast_address = rand() % size_of_memory;
+        int blast_replace_value = rand() % 0xFF;
+
+        char strBuffer[255];
+        sprintf(strBuffer, "ADDRESS: %d MEM_SIZE: %d REPLACEMENT_VALUE: %d", blast_address, size_of_memory, blast_replace_value);
+
+        write_to_log_file(strBuffer, 1);
+
+        write_mem_b(blast_address, blast_replace_value);
+    }
+
+    write_to_log_file("==========================[ BLAST END ]==========================", 1);
 }
 
 /*
