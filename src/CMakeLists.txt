@@ -58,7 +58,7 @@ if(VNC)
 endif()
 
 target_link_libraries(86Box cpu chipset mch dev mem fdd game cdrom zip mo hdd
-    net print scsi sio snd vid voodoo plat ui)
+    net print scsi sio snd vid voodoo plat ui corrupt)
 
 if(WIN32 AND ARCH STREQUAL "i386")
     if(MINGW)
@@ -196,6 +196,7 @@ add_subdirectory(sio)
 add_subdirectory(scsi)
 add_subdirectory(sound)
 add_subdirectory(video)
+add_subdirectory(corrupt)
 if (APPLE)
     add_subdirectory(mac)
 endif()

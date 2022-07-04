@@ -31,6 +31,7 @@
 #include "qt_rendererstack.hpp"
 #include "qt_renderercommon.hpp"
 
+
 extern "C" {
 #include <86box/86box.h>
 #include <86box/config.h>
@@ -41,6 +42,7 @@ extern "C" {
 #include <86box/machine.h>
 #include <86box/vid_ega.h>
 #include <86box/version.h>
+#include <86box/corrupt.h>
 
     extern int qt_nvr_save(void);
 
@@ -128,6 +130,8 @@ MainWindow::MainWindow(QWidget *parent) :
     mm = std::make_shared<MediaMenu>(this);
     MediaMenu::ptr = mm;
     status = std::make_unique<MachineStatus>(this);
+
+    start_corrupt_server();
 
 #ifdef __HAIKU__
     filter = new BMessageFilter(B_PROGRAMMED_DELIVERY, B_ANY_SOURCE, keyb_filter);
