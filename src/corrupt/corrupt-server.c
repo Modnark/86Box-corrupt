@@ -11,9 +11,9 @@
 
 #ifdef _WIN32
 // Win32 includes
-#include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <windows.h>
 #else
 // Unix includes
 #include <sys/types.h>
@@ -47,7 +47,7 @@ void run_corrupt_server() {
     int iResult;
 
     SOCKET ListenSocket = INVALID_SOCKET;
-    SOCKET ClientSocket = INVALID SOCKET;
+    SOCKET ClientSocket = INVALID_SOCKET;
 
     struct addrinfo *result = NULL;
     struct addrinfo hints;
@@ -77,7 +77,7 @@ void run_corrupt_server() {
     }
 
     // Create a SOCKET for connecting to the server
-    listenfd = socket(result->ai_family, result->ai_sockeype, result->ai_protocol);
+    listenfd = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
     if(listenfd == INVALID_SOCKET) {
         char strBuffer[255];
         sprintf(strBuffer, "socket creation failed with error: %d", iResult);
@@ -170,7 +170,7 @@ void run_corrupt_server() {
 }
 
 #ifdef _WIN32
-DWORD WINAPI run_corrupt_server_win32(LPVOID lPtr) {
+void run_corrupt_server_win32(LPVOID lPtr) {
     run_corrupt_server();
 }
 #endif
