@@ -21,8 +21,11 @@
 #include <netinet/in.h>
 #endif
 
+#ifdef _WIN32
+#define PORT    "59891"
+#else
 #define PORT    59891
-
+#endif
 enum server_packets {
     srv_Invalid,
     srv_GetMemSize,
