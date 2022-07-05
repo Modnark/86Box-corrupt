@@ -29,15 +29,16 @@
 enum server_packets {
     srv_Invalid,
     srv_GetMemSize,
-    srv_BlastMem
+    srv_BlastMem,
+	srv_BlastMemMan
 };
 
 void run_corrupt_server() {
     write_to_log_file("==========================[ Corrupt server started ]==========================", 1);
     int connfd = 0, listenfd = 1;
     struct sockaddr_in serv_addr;
-    char sendBuff[1025];
-    char readBuff[1025];
+    char sendBuff[5005];
+    char readBuff[5005];
     int count = 0;
     int total = 0;
 
@@ -139,6 +140,9 @@ void run_corrupt_server() {
                     break;
                 case srv_BlastMem:
                     do_corruption_blast(atoi(tokens[1]));
+					break;
+				case srv_BlastMemMan:
+					do_corruption_blast_manual(readBuff);
                     break;
             }
 

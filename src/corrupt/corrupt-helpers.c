@@ -6,6 +6,7 @@
 #include <86box/86box.h>
 #include <86box/mem.h>
 
+
 /*
  * function: get_memory_size
  * description: Gets the total size of memory (in bytes)
@@ -58,6 +59,31 @@ void do_corruption_blast(int radius) {
     }
 
     write_to_log_file("==========================[ BLAST END ]==========================", 1);
+}
+
+void do_corruption_blast_manual(char* packet) {
+	unsigned int blast_repeats = *(int*)&packet[1];
+	unsigned int blast_repeated = 0;
+    srand(time(NULL));
+
+    write_to_log_file("==========================[ BLAST MANUAL START ]==========================", 1);
+	
+	if(blast_repeats < 1001){
+		for(int i = 5; blast_repeated != blast_repeats; i=i+5) {
+			unsigned int size_of_memory = get_memory_size();
+			unsigned int blast_address = *(int*)&packet[i];
+			unsigned char blast_replace_value = packet[i+4];
+			
+			char strBuffer[255];
+			sprintf(strBuffer, "ADDRESS: %u MEM_SIZE: %d REPLACEMENT_VALUE: %u", blast_address, size_of_memory, blast_replace_value);
+
+			write_to_log_file(strBuffer, 1);
+
+			write_mem_b(blast_address, blast_replace_value);
+			++blast_repeated;
+		}
+	}
+    write_to_log_file("==========================[ BLAST MANUAL END ]==========================", 1);
 }
 
 /*
