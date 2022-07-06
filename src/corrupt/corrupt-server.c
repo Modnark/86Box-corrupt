@@ -1,25 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <wchar.h>
-#include <ctype.h>
 #include <86box/corrupt-server.h>
-#include <86box/corrupt-helpers.h>
-#include <86box/86box.h>
-#include <86box/mem.h>
-
-#ifdef _WIN32
-// Win32 includes
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <windows.h>
-#else
-// Unix includes
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#endif
 
 #ifdef _WIN32
 #define PORT    "59891"
@@ -105,6 +84,9 @@ void run_corrupt_server() {
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(PORT);
+
+    int true = 1;
+    setsockopt(listenfd,SOL_SOCKET,SO_REUSEADDR,&true,sizeof(int));
 
     bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 #endif

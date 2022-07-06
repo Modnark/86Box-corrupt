@@ -61,6 +61,12 @@ void do_corruption_blast(int radius) {
     write_to_log_file("==========================[ BLAST END ]==========================", 1);
 }
 
+/*
+ * function: do_corruption_blast_manual
+ * description: Corrupts the memory, controlled by client
+ * parameters: (char* packet): Packet that contains data for blast
+ * returns: nothing
+*/
 void do_corruption_blast_manual(char* packet) {
 	unsigned int blast_repeats = *(int*)&packet[1];
 	unsigned int blast_repeated = 0;
